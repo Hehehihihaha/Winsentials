@@ -1,0 +1,136 @@
+{
+  "app": {
+    "description": "Windows optimization toolbox",
+    "title": "Winsentials"
+  },
+  "appearance": {
+    "description": "Configure the visual details of Windows, from shell behavior to interface polish.",
+    "tweaks": {
+      "classicContextMenu": {
+        "detailDescription": "Disables the simplified Windows 11 context menu and restores the classic Windows 10 menu without requiring the Show more options step.",
+        "name": "Classic Context Menu",
+        "shortDescription": "Restores the classic context menu layout in Windows 11."
+      },
+      "fastTaskbarThumbnails": {
+        "detailDescription": "Reduces the delay before open app previews appear on hover. The interface feels more responsive.",
+        "name": "Fast Taskbar Thumbnails",
+        "shortDescription": "Speeds up how quickly taskbar window thumbnails appear."
+      },
+      "fasterCursorBlinkRate": {
+        "detailDescription": "Adjusts how quickly the vertical text caret fades in and out inside text fields.",
+        "name": "Faster Cursor Blink Rate",
+        "shortDescription": "Increases the blink frequency of the text cursor."
+      },
+      "hideGalleryNavigationPane": {
+        "detailDescription": "Completely hides the Gallery icon that was introduced in newer Windows 11 updates (Moment 4 and later).",
+        "name": "Hide \"Gallery\" in File Explorer",
+        "shortDescription": "Removes Gallery from the left side of File Explorer."
+      },
+      "hideHomeNavigationPane": {
+        "detailDescription": "Disables the Home start page in the navigation pane. Useful if you prefer opening File Explorer with This PC instead.",
+        "name": "Hide \"Home\" in File Explorer",
+        "shortDescription": "Removes Home from the left side of File Explorer."
+      },
+      "hideNetworkNavigationPane": {
+        "detailDescription": "Hides the system Network folder from the navigation pane. You can still access network resources through the address bar by entering \\\\computer_name.",
+        "name": "Hide \"Network\" in File Explorer",
+        "shortDescription": "Removes the Network icon from the left side of File Explorer."
+      },
+      "openExplorerToThisPc": {
+        "detailDescription": "Changes File Explorer's default launch target. Instead of opening Home with recent files and favorites, it will open directly to the view that lists drives and network locations.",
+        "name": "Open File Explorer to This PC",
+        "shortDescription": "Open This PC instead of Home when File Explorer starts."
+      },
+      "removeShortcutArrows": {
+        "detailDescription": "Changes the system shortcut overlay icon to a transparent one.",
+        "name": "Remove Shortcut Arrows",
+        "shortDescription": "Removes the small arrows from shortcut icons on the desktop."
+      },
+      "removeShortcutSuffix": {
+        "detailDescription": "Changes the system flag responsible for automatically renaming shortcuts.",
+        "name": "Remove Shortcut Suffix",
+        "shortDescription": "Disables adding the “ - Shortcut” text to the names of new shortcuts."
+      }
+    },
+    "title": "Appearance"
+  },
+  "navigation": {
+    "appearance": "Appearance",
+    "security": "Security",
+    "settings": "Settings"
+  },
+  "security": {
+    "description": "Adjust Windows safety prompts, downloaded file handling, and related system checks.",
+    "title": "Security",
+    "tweaks": {
+      "disableOpenFileWarning": {
+        "detailDescription": "Prevents adding Zone.Identifier metadata to newly downloaded files. This removes the “Are you sure you want to run this file?” prompt and the need to click Unblock in file properties.",
+        "name": "Disable Open File Warning",
+        "shortDescription": "Disables the security warning shown when launching downloaded files."
+      },
+      "disableUserAccountControl": {
+        "detailDescription": "Sets User Account Control to “Never notify” and disables the limited LUA execution environment, removing all confirmation prompts when launching programs as an administrator.",
+        "name": "Disable User Account Control (UAC)",
+        "riskDescription": "Some third-party apps are overly strict about user safety and may limit part of their functionality when UAC is disabled.\n\nIf you run into that situation, you can often work around it by launching the app with:\n<code>runas /trustlevel:0x20000 \"program.exe\"</code>",
+        "shortDescription": "Completely disables UAC prompts and enforcement."
+      }
+    }
+  },
+  "settings": {
+    "acrylic": "Acrylic material",
+    "acrylicDescription": "Apply Windows acrylic to the sidebar and titlebar.",
+    "acrylicUnavailable": "Acrylic material is unavailable on this system.",
+    "description": "Adjust application language and theme preferences.",
+    "language": "Language",
+    "languageDescription": "Choose the interface language.",
+    "languages": {
+      "en": "English",
+      "ru": "Russian"
+    },
+    "theme": "Theme",
+    "themeDescription": "Select the light, dark, or system appearance used by the application shell.",
+    "themes": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "title": "Settings"
+  },
+  "tweaks": {
+    "actions": {
+      "copyCommand": "Copy command",
+      "later": "Later",
+      "restartNow": "Restart now",
+      "retry": "Retry",
+      "showDetails": "Show details"
+    },
+    "apps": {
+      "explorer": "Explorer"
+    },
+    "errors": {
+      "apply": "Failed to apply tweak.",
+      "copyCommand": "Failed to copy the command.",
+      "loadCategory": "Failed to load tweaks.",
+      "restartApp": "Failed to restart the required app."
+    },
+    "prompts": {
+      "restartExplorer": "Explorer needs to restart to apply this tweak.",
+      "restartPc": "A full PC restart is required to apply this tweak.",
+      "restartPcDescription": "The change will only take effect after a full Windows reboot."
+    },
+    "requires": {
+      "restartExplorer": "Requires Explorer restart",
+      "restartPc": "Requires PC restart",
+      "windowsBuild": "Requires Windows build {{build}} or newer"
+    },
+    "states": {
+      "disabled": "Disabled",
+      "enabled": "Enabled",
+      "loading": "Loading tweaks..."
+    },
+    "success": {
+      "copyCommand": "Command copied to clipboard.",
+      "restartApp": "{{appName}} restarted."
+    }
+  }
+}

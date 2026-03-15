@@ -1,0 +1,58 @@
+import type { AppLanguage, AppTheme } from '@/shared/config/app'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import {
+  DEFAULT_LANGUAGE,
+  DEFAULT_THEME,
+} from '@/shared/config/app'
+
+interface PersistedPreferencesState {
+  chromeAcrylic?: boolean
+  language?: AppLanguage
+  sidebarAcrylic?: boolean
+  theme?: AppTheme | 'acrylic'
+}
+
+interface PreferencesState {
+  chromeAcrylic: boolean
+  hasHydrated: boolean
+  language: AppLanguage
+  setChromeAcrylic: (enabled: boolean) => void
+  setHasHydrated: (hasHydrated: boolean) => void
+  theme: AppTheme
+  setLanguage: (language: AppLanguage) => void
+  setTheme: (theme: AppTheme) => void
+}
+
+export const usePreferencesStore = create<PreferencesState>()(
+  persist(
+    set => ({
+      chromeAcrylic: false,
+      hasHydrated: false,
+      language: DEFAULT_LANGUAGE,
+      setChromeAcrylic: chromeAcrylic => set({ chromeAcrylic }),
+      setHasHydrated: hasHydrated => set({ hasHydrated }),
+      theme: DEFAULT_THEME,
+      setLanguage: language => set({ language }),
+      setTheme: theme => set({ theme }),
+    }),
+    {
+      migrate: (persistedState: unknown) => {
+        const state = (persistedState ?? {}) as PersistedPreferencesState
+        const legacyAcrylic = state.theme === 'acrylic'
+
+        return {
+          chromeAcrylic:
+            legacyAcrylic
+            || state.chromeAcrylic === true
+            || state.sidebarAcrylic === true,
+          language: state.language ?? DEFAULT_LANGUAGE,
+          theme: legacyAcrylic ? 'dark' : (state.theme ?? DEFAULT_THEME),
+        }
+      },
+      name: 'winsentials-preferences',
+      onRehydrateStorage: () => state => state?.setHasHydrated(true),
+      version: 3,
+    },
+  ),
+)
