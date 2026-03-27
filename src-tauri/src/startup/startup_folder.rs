@@ -10,7 +10,9 @@ use crate::error::AppError;
 use crate::startup::disabled_store::{
     DisabledStartupFileMetadata, hex_encode, startup_disabled_dir, startup_sidecar_path,
 };
-use crate::startup::presentation::startup_folder_presentation;
+use crate::startup::presentation::{
+    startup_folder_presentation, startup_folder_presentation_light,
+};
 use crate::startup::types::{
     StartupEntry, StartupEntryDetails, StartupScope, StartupSource, StartupStatus,
 };
@@ -22,6 +24,34 @@ pub fn list_entries() -> Result<Vec<StartupEntry>, AppError> {
     entries.extend(list_disabled_entries(StartupScope::CurrentUser)?);
     entries.extend(list_disabled_entries(StartupScope::AllUsers)?);
     Ok(entries)
+}
+
+pub fn entry(id: &str) -> Result<StartupEntry, AppError> {
+    match find_active_path(id) {
+        Ok((scope, active_path)) => {
+            return build_entry_from_path(
+                active_path,
+                scope,
+                StartupStatus::Enabled,
+                false,
+                Some(id.to_string()),
+                true,
+            );
+        }
+        Err(error) if is_startup_folder_entry_not_found(&error, id) => {}
+        Err(error) => return Err(error),
+    }
+
+    let metadata = read_disabled_metadata(id)?;
+    let (scope, _, disabled_file_path) = validate_metadata_paths(&metadata)?;
+    build_entry_from_path(
+        disabled_file_path,
+        scope,
+        StartupStatus::Disabled,
+        false,
+        Some(metadata.id),
+        true,
+    )
 }
 
 pub fn disable_entry(id: &str) -> Result<StartupEntry, AppError> {
@@ -64,6 +94,7 @@ pub fn disable_entry(id: &str) -> Result<StartupEntry, AppError> {
         StartupStatus::Disabled,
         false,
         Some(id.to_string()),
+        true,
     )
 }
 
@@ -82,6 +113,7 @@ pub fn enable_entry(id: &str) -> Result<StartupEntry, AppError> {
         StartupStatus::Enabled,
         false,
         Some(metadata.id),
+        true,
     )
 }
 
@@ -107,6 +139,7 @@ pub fn entry_details(id: &str) -> Result<StartupEntryDetails, AppError> {
             StartupStatus::Enabled,
             false,
             Some(id.to_string()),
+            true,
         )?;
         return Ok(build_details(entry, scope, active_path));
     }
@@ -119,6 +152,7 @@ pub fn entry_details(id: &str) -> Result<StartupEntryDetails, AppError> {
         StartupStatus::Disabled,
         false,
         Some(metadata.id),
+        true,
     )?;
     Ok(build_details(entry, scope, disabled_file_path))
 }
@@ -148,6 +182,7 @@ fn list_active_entries(scope: StartupScope) -> Result<Vec<StartupEntry>, AppErro
             StartupStatus::Enabled,
             false,
             None,
+            false,
         )?);
     }
 
@@ -184,6 +219,7 @@ fn list_disabled_entries(scope: StartupScope) -> Result<Vec<StartupEntry>, AppEr
             StartupStatus::Disabled,
             false,
             Some(metadata.id),
+            false,
         )?);
     }
 
@@ -218,6 +254,13 @@ fn find_active_path(id: &str) -> Result<(StartupScope, PathBuf), AppError> {
     )))
 }
 
+fn is_startup_folder_entry_not_found(error: &AppError, id: &str) -> bool {
+    matches!(
+        error,
+        AppError::Message(message) if message == &format!("startup folder entry not found: {id}")
+    )
+}
+
 fn read_disabled_metadata(id: &str) -> Result<DisabledStartupFileMetadata, AppError> {
     for scope in [StartupScope::CurrentUser, StartupScope::AllUsers] {
         let disabled_dir = startup_disabled_dir(scope)?;
@@ -249,6 +292,7 @@ fn build_entry_from_path(
     status: StartupStatus,
     run_once: bool,
     id_override: Option<String>,
+    enrich: bool,
 ) -> Result<StartupEntry, AppError> {
     let name = path
         .file_stem()
@@ -258,7 +302,11 @@ fn build_entry_from_path(
         .to_string();
     let location_label = startup_dir(scope)?.to_string_lossy().into_owned();
     let path_string = path.to_string_lossy().into_owned();
-    let presentation = startup_folder_presentation(&path);
+    let presentation = if enrich {
+        startup_folder_presentation(&path)
+    } else {
+        startup_folder_presentation_light(&path)
+    };
 
     Ok(StartupEntry {
         id: id_override.unwrap_or_else(|| startup_folder_id(scope, &path)),
